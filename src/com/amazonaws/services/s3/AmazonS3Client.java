@@ -206,6 +206,22 @@ public class AmazonS3Client extends AmazonWebServiceClient implements AmazonS3 {
     /** Provider for AWS credentials. */
     private AWSCredentialsProvider awsCredentialsProvider;
 
+    private Long currentTimeMillis = null;
+
+
+    public Long getCurrentTimeMillis() {
+        return currentTimeMillis;
+    }
+
+    public void setCurrentTimeMillis(Long currentTimeMillis) {
+        this.currentTimeMillis = currentTimeMillis;
+    }
+
+    public AmazonS3Client withCurrentTimeMillis(Long currentTimeMillis) {
+        setCurrentTimeMillis(currentTimeMillis);
+        return this;
+    }
+
     /**
      * Constructs a new client to invoke service methods on Amazon S3. A
      * credentials provider chain will be used that searches for credentials in
@@ -2026,8 +2042,13 @@ public class AmazonS3Client extends AmazonWebServiceClient implements AmazonS3 {
             "The HTTP method request parameter must be specified when generating a pre-signed URL");
 
         if (generatePresignedUrlRequest.getExpiration() == null) {
+                Long timeMillis = this.currentTimeMillis;
+                if(null == timeMillis) {
+                        timeMillis = System.currentTimeMillis();
+                }
+
             generatePresignedUrlRequest.setExpiration(
-                    new Date(System.currentTimeMillis() + 1000 * 60 * 15));
+                    new Date(timeMillis + 1000 * 60 * 15));
         }
 
         HttpMethodName httpMethod = HttpMethodName.valueOf(generatePresignedUrlRequest.getMethod().toString());
